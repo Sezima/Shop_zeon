@@ -19,7 +19,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from main.views import CollectionListView, PublicListView
+from main.views import CollectionListView, PublicListView, NewListView, HelpListView, AboutListView, \
+    AboutImageListView  # HelpImageListView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -40,4 +41,9 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/v1/collection/', CollectionListView.as_view()),
     path('api/v1/public/', PublicListView.as_view()),
+    path('api/v1/news/', NewListView.as_view()),
+    path('api/v1/help/', HelpListView.as_view()),
+    path('api/v1/about/', AboutListView.as_view()),
+    path('api/v1/aboutimage/', AboutImageListView.as_view()),
+    # path('api/v1/helpimage/', HelpImageListView.as_view()),
 ]
