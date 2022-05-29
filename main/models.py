@@ -21,3 +21,29 @@ class Collection(models.Model):
 class Public(models.Model):
     title = models.CharField(max_length=200, blank=True, null=True)
     text = models.TextField()
+
+
+class New(models.Model):
+    image = models.ImageField(upload_to='images')
+    title = models.CharField(max_length=100, blank=True, null=True)
+    text = models.TextField()
+
+
+class Help(models.Model):
+    question = models.TextField()
+    answer = models.TextField()
+    image = models.ImageField(upload_to='images')
+
+
+# class HelpImage(models.Model):
+#     image = models.ImageField(upload_to='images')
+
+
+class About(models.Model):
+    title = models.CharField(max_length=100, blank=True, null=True)
+    text = models.TextField()
+
+
+class AboutImage(models.Model):
+    image = models.ImageField(upload_to='abouts', blank=True, null=True)
+    about = models.ForeignKey(About, on_delete=models.CASCADE, related_name='images')
