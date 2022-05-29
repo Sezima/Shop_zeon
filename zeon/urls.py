@@ -19,6 +19,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+from main.views import CollectionListView, PublicListView
+
 schema_view = get_schema_view(
    openapi.Info(
       title="Snippets API",
@@ -36,4 +38,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', schema_view.with_ui()),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('api/v1/collection/', CollectionListView.as_view()),
+    path('api/v1/public/', PublicListView.as_view()),
 ]
