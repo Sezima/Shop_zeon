@@ -19,9 +19,9 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from main.views import CollectionListView, PublicListView, NewListView, HelpListView, AboutListView, \
-    AboutImageListView  # HelpImageListView
-
+from main.views import CollectionListView, PublicListView, NewListView, \
+    FooterListView, FooterTwoListView,\
+    HelpAPIView, AboutAPIView, ProductListView
 schema_view = get_schema_view(
    openapi.Info(
       title="Snippets API",
@@ -42,8 +42,15 @@ urlpatterns = [
     path('api/v1/collection/', CollectionListView.as_view()),
     path('api/v1/public/', PublicListView.as_view()),
     path('api/v1/news/', NewListView.as_view()),
-    path('api/v1/help/', HelpListView.as_view()),
-    path('api/v1/about/', AboutListView.as_view()),
-    path('api/v1/aboutimage/', AboutImageListView.as_view()),
+    path('api/v1/footer/', FooterListView.as_view()),
+    path('api/v1/footerTwo/', FooterTwoListView.as_view()),
+    # path('api/v1/help/', HelpListView.as_view()),
     # path('api/v1/helpimage/', HelpImageListView.as_view()),
+    # path('api/v1/about/', AboutListView.as_view()),
+    # path('api/v1/aboutimage/', AboutImageListView.as_view()),
+    path('api/v1/product/', ProductListView.as_view()),
+    path('api/v1/help/', HelpAPIView.as_view()),
+    path('api/v1/about/', AboutAPIView.as_view()),
+
+
 ]

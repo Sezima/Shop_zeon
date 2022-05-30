@@ -1,6 +1,6 @@
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.contrib import admin
-from django import forms
+
 
 from .models import *
 
@@ -46,16 +46,37 @@ class AboutImageInline(admin.TabularInline):
     max_num = 3
     min_num = 1
 
-# class HelpImageAdminForm(forms.ModelForm):
-#     image = models.ImageField(upload_to='images')
-#
-#     class Meta:
-#         model = HelpImage
-#         fields = '__all__'
-#
-#
-# class HelpImageAdmin(admin.ModelAdmin):
-#     form = HelpImageAdminForm
+
+class ProductAdminForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorUploadingWidget)
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
+
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    max_num = 8
+    min_num = 1
+
+
+class HelpImageAdminForm(forms.ModelForm):
+    image = models.ImageField(upload_to='images')
+
+    class Meta:
+        model = HelpImage
+        fields = '__all__'
+
+
+
+class HelpImageAdmin(admin.ModelAdmin):
+    form = HelpImageAdminForm
+
 
 
 @admin.register(Public)
@@ -68,9 +89,9 @@ class NewAdmin(admin.ModelAdmin):
     form = NewAdminForm
 
 
-# @admin.register(HelpImage)
-# class PublicAdmin(admin.ModelAdmin):
-#     form = HelpImageAdminForm
+@admin.register(HelpImage)
+class PublicAdmin(admin.ModelAdmin):
+    form = HelpImageAdminForm
 
 
 @admin.register(About)
@@ -79,6 +100,15 @@ class AboutAdmin(admin.ModelAdmin):
     form = AboutAdminForm
 
 
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    inlines = [ProductImageInline]
+    form = ProductAdminForm
+
+
+
+admin.site.unregister(Product)
+admin.site.register(Product, ProductAdmin)
 admin.site.register(Main)
 admin.site.register(Advantages)
 admin.site.register(Collection)
@@ -89,5 +119,7 @@ admin.site.unregister(New)
 admin.site.register(New, NewAdmin)
 admin.site.unregister(About)
 admin.site.register(About, AboutAdmin)
-# admin.site.unregister(HelpImage)
-# admin.site.register(HelpImage, HelpImageAdmin)
+admin.site.register(FooterTwo)
+admin.site.register(Footer)
+admin.site.unregister(HelpImage)
+admin.site.register(HelpImage, HelpImageAdmin)
