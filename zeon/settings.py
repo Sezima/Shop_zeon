@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'fontawesome_5',
+    'phonenumber_field',
+    'drf_multiple_model',
 ]
 
 MIDDLEWARE = [

@@ -18,9 +18,10 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.routers import DefaultRouter
 
-from main.views import CollectionListView, PublicListView, NewListView, HelpListView, AboutListView, \
-    AboutImageListView  # HelpImageListView
+from main.views import CollectionListView, PublicListView, NewListView, \
+    HelpAPIView, AboutAPIView, ProductListView, FavoriteCreateView, FooterAPIView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -35,6 +36,8 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', schema_view.with_ui()),
@@ -42,8 +45,18 @@ urlpatterns = [
     path('api/v1/collection/', CollectionListView.as_view()),
     path('api/v1/public/', PublicListView.as_view()),
     path('api/v1/news/', NewListView.as_view()),
-    path('api/v1/help/', HelpListView.as_view()),
-    path('api/v1/about/', AboutListView.as_view()),
-    path('api/v1/aboutimage/', AboutImageListView.as_view()),
+    # path('api/v1/footer/', FooterListView.as_view()),
+    # path('api/v1/footerTwo/', FooterTwoListView.as_view()),
+    # path('api/v1/help/', HelpListView.as_view()),
     # path('api/v1/helpimage/', HelpImageListView.as_view()),
+    # path('api/v1/about/', AboutListView.as_view()),
+    # path('api/v1/aboutimage/', AboutImageListView.as_view()),
+    path('api/v1/product/', ProductListView.as_view()),
+    path('api/v1/help/', HelpAPIView.as_view()),
+    path('api/v1/footer/', FooterAPIView.as_view()),
+    path('api/v1/about/', AboutAPIView.as_view()),
+    path('api/favorite/', FavoriteCreateView.as_view())
+    # path('api/favorite/', FavoriteListView.as_view()),
+
+
 ]
