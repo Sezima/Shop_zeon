@@ -1,4 +1,5 @@
-from rest_framework import generics
+from rest_framework import generics, viewsets
+from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from drf_multiple_model.views import ObjectMultipleModelAPIView
@@ -6,7 +7,7 @@ from drf_multiple_model.views import ObjectMultipleModelAPIView
 from .models import *
 from .serializers import CollectionSerializer, PublicSerializer, NewSerializer, HelpSerializer, \
     AboutSerializer, AboutImageSerializer, ProductSerializer, FooterSerializer, \
-    FooterTwoSerializer, HelpImageSerializer
+    FooterTwoSerializer, HelpImageSerializer, FavoriteSerializer
 
 
 class PaginationClass(PageNumberPagination):
@@ -88,13 +89,34 @@ class ProductListView(generics.ListAPIView):
     permission_classes = [AllowAny, ]
 
 
-class FooterListView(generics.ListAPIView):
-    queryset = Footer.objects.all()
-    serializer_class = FooterSerializer
-    permission_classes = [AllowAny, ]
+# class FooterListView(generics.ListAPIView):
+#     queryset = Footer.objects.all()
+#     serializer_class = FooterSerializer
+#     permission_classes = [AllowAny, ]
+#
+#
+# class FooterTwoListView(generics.ListAPIView):
+#     queryset = FooterTwo.objects.all()
+#     serializer_class = FooterTwoSerializer
+#     permission_classes = [AllowAny, ]
+
+class FooterAPIView(ObjectMultipleModelAPIView):
+    querylist = [
+        {'queryset': Footer.objects.all(), 'serializer_class': FooterSerializer},
+        {'queryset': FooterTwo.objects.all(), 'serializer_class': FooterTwoSerializer},
+    ]
+
+# class FavoriteListView(generics.ListAPIView):
+#
+#         queryset = Favorite.objects.all()
+#         serializer_class = FavoriteSerializer
+#         permission_classes = [AllowAny, ]
 
 
-class FooterTwoListView(generics.ListAPIView):
-    queryset = FooterTwo.objects.all()
-    serializer_class = FooterTwoSerializer
-    permission_classes = [AllowAny, ]
+class FavoriteCreateView(generics.CreateAPIView, ListAPIView, DestroyAPIView):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+
+
+
+

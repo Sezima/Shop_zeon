@@ -12,9 +12,11 @@ class Main(models.Model):
 
 
 class Advantages(models.Model):
-    icon = IconField()
+    icon = models.FileField(null=True)
     title = models.CharField(max_length=200, blank=True, null=True)
     text = models.TextField()
+
+
 
 
 class Collection(models.Model):
@@ -61,17 +63,18 @@ class Footer(models.Model):
 
 class FooterTwo(models.Model):
     phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
-    number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True, blank=True)
-    mail = models.URLField(blank=True)
-    insta = models.URLField(blank=True)
-    telegram = models.URLField(blank=True)
-    whatsapp = models.URLField(validators=[phoneNumberRegex], max_length=16, unique=True, blank=True)
+    number = models.CharField(validators=[phoneNumberRegex], max_length=16, null=True, blank=True)
+    telegram = models.URLField(max_length=500, blank=True, null=True)
+    instagram = models.URLField(max_length=500, blank=True, null=True)
+    email = models.URLField(max_length=500, blank=True, null=True)
+    whatsapp = models.CharField(validators=[phoneNumberRegex], max_length=16, null=True, blank=True)
+    def save(self):
+        self.whatsapp = 'https://wa.me/' + str(self.whatsapp)
+        super(FooterTwo, self).save()
 
 
-class FooterTwoNumbers(models.Model):
-    phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
-    phoneNumbers = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True, blank=True)
-    footers = models.ForeignKey(FooterTwo, on_delete=models.CASCADE, related_name='phoneNumbers')
+
+
 
 
 CHOOSE_SIZE = [
@@ -80,17 +83,6 @@ CHOOSE_SIZE = [
     ('46', '46'),
     ('48', '48'),
     ('50', '50'),
-]
-COLOR_PALETTE = [
-        ("#FFFFFF", "white", ),
-        ("#000000", "black", ),
-        ("#ff0000", 'red'),
-        ("#fd7715", 'orenge'),
-        ("#fde415", 'yellow'),
-        ("#3ff515", 'green'),
-        ("#3fd1ff", 'blue'),
-        ("#2c1fff", 'darkblue'),
-        ("#3e2661", 'purple'),
 ]
 
 
@@ -116,3 +108,12 @@ class ProductImage(models.Model):
     image = models.ImageField(upload_to='products', blank=True, null=True)
     products = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     color = ColorField()
+
+
+
+class Favorite(models.Model):
+    post = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favourites')
+    favorite = models.BooleanField(default=False)
+
+
+

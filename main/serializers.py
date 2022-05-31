@@ -53,7 +53,6 @@ class ProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
-        representation['favorites'] = ProductImageSerializer(instance.favorites.all(), many=True).data
 
         return representation
 
@@ -88,4 +87,37 @@ class FooterSerializer(serializers.ModelSerializer):
 class FooterTwoSerializer(serializers.ModelSerializer):
     class Meta:
         model = FooterTwo
-        fields = ('number', 'mail', 'insta', 'telegram', 'whatsapp')
+        fields = ('number', 'telegram', 'instagram', 'email', 'whatsapp')
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+
+
+
+
+    def create(self, validated_data):
+        post = validated_data.get('post')
+        favorite = Favorite.objects.get_or_create(post=post)[0]
+        favorite.favorite = validated_data['favorite']
+        favorite.save()
+        return favorite
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
