@@ -3,10 +3,16 @@ from rest_framework import serializers
 from .models import *
 
 
+"""Коллекция"""
+
+
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
         fields = '__all__'
+
+
+"""Публичная оферта"""
 
 
 class PublicSerializer(serializers.ModelSerializer):
@@ -15,10 +21,16 @@ class PublicSerializer(serializers.ModelSerializer):
         fields = ('title', 'text')
 
 
+"""Новости"""
+
+
 class NewSerializer(serializers.ModelSerializer):
     class Meta:
         model = New
         fields = ('image', 'title', 'text')
+
+
+"""Помощь"""
 
 
 class HelpSerializer(serializers.ModelSerializer):
@@ -33,6 +45,9 @@ class HelpImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+"""О нас"""
+
+
 class AboutSerializer(serializers.ModelSerializer):
     class Meta:
         model = About
@@ -45,16 +60,20 @@ class AboutImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+"""Товар"""
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
 
-        return representation
+def to_representation(instance):
+    representation = super().to_representation(instance)
+    representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
+
+    return representation
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -78,6 +97,9 @@ class ProductImageSerializer(serializers.ModelSerializer):
         return representation
 
 
+"""Футер"""
+
+
 class FooterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Footer
@@ -90,34 +112,61 @@ class FooterTwoSerializer(serializers.ModelSerializer):
         fields = ('number', 'telegram', 'instagram', 'email', 'whatsapp')
 
 
-class FavoriteSerializer(serializers.ModelSerializer):
+"""Коллекция(товара)"""
 
+
+class CollProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Favorite
-        fields = '__all__'
+        model = Product
+        fields = ('id', 'price', 'images', 'title', 'new_price', 'sale', 'favorite')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
+        return representation
 
 
+"""Новинки"""
 
 
-    def create(self, validated_data):
-        post = validated_data.get('post')
-        favorite = Favorite.objects.get_or_create(post=post)[0]
-        favorite.favorite = validated_data['favorite']
-        favorite.save()
-        return favorite
+class NewProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
+        return representation
 
 
+"""Хит продаж"""
 
 
+class HitProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
+        return representation
 
 
+"""Главная страница"""
 
 
+class MainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Main
+        fields = ('image', 'link')
 
 
+"""Преимущества"""
 
 
-
-
-
-
+class AdvantagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advantages
+        fields = ('icon', 'title', 'text')

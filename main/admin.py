@@ -1,4 +1,5 @@
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from django import forms
 from django.contrib import admin
 
 
@@ -15,7 +16,6 @@ class PublicAdminForm(forms.ModelForm):
 
 class PublicAdmin(admin.ModelAdmin):
     form = PublicAdminForm
-
 
 
 class NewAdminForm(forms.ModelForm):
@@ -40,6 +40,7 @@ class AboutAdminForm(forms.ModelForm):
 
 class AboutAdmin(admin.ModelAdmin):
     form = AboutAdminForm
+
 
 class AboutImageInline(admin.TabularInline):
     model = AboutImage
@@ -73,10 +74,8 @@ class HelpImageAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
-
 class HelpImageAdmin(admin.ModelAdmin):
     form = HelpImageAdminForm
-
 
 
 @admin.register(Public)
@@ -106,7 +105,6 @@ class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
 
 
-
 admin.site.unregister(Product)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Main)
@@ -123,4 +121,4 @@ admin.site.register(FooterTwo)
 admin.site.register(Footer)
 admin.site.unregister(HelpImage)
 admin.site.register(HelpImage, HelpImageAdmin)
-admin.site.register(Favorite)
+admin.site.register(BackCall)

@@ -21,7 +21,8 @@ from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 
 from main.views import CollectionListView, PublicListView, NewListView, \
-    HelpAPIView, AboutAPIView, ProductListView, FavoriteCreateView, FooterAPIView
+    HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
+    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -36,7 +37,8 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
-
+# router = DefaultRouter()
+# router.register('favorite', FavoriteViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -55,8 +57,10 @@ urlpatterns = [
     path('api/v1/help/', HelpAPIView.as_view()),
     path('api/v1/footer/', FooterAPIView.as_view()),
     path('api/v1/about/', AboutAPIView.as_view()),
-    path('api/favorite/', FavoriteCreateView.as_view())
-    # path('api/favorite/', FavoriteListView.as_view()),
+    path('api/v1/collproduct/', CollProductListView.as_view()),
+    path('api/v1/newproduct/', NewProductListView.as_view()),
+    path('api/v1/hitproduct/', HitProductListView.as_view()),
+    path('api/v1/mainsite/', MainSiteAPIView.as_view())
 
 
 ]
