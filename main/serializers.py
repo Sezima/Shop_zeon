@@ -69,11 +69,10 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-def to_representation(instance):
-    representation = super().to_representation(instance)
-    representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
-
-    return representation
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
+        return representation
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -118,7 +117,7 @@ class FooterTwoSerializer(serializers.ModelSerializer):
 class CollProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'price', 'images', 'title', 'new_price', 'sale', 'favorite')
+        fields = ('id', 'price', 'images', 'title', 'new_price', 'sale', 'favorite', 'size', 'new', 'hit')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -132,7 +131,7 @@ class CollProductSerializer(serializers.ModelSerializer):
 class NewProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit')
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit', 'size')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -146,7 +145,7 @@ class NewProductSerializer(serializers.ModelSerializer):
 class HitProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit')
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit', 'size')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

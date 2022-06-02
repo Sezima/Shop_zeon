@@ -1,6 +1,7 @@
 from colorfield.fields import ColorField
 from django.core.validators import RegexValidator
 from django.db import models
+# from django.forms import forms
 from fontawesome_5.fields import IconField
 
 
@@ -25,8 +26,12 @@ class Advantages(models.Model):
 
 
 class Collection(models.Model):
+    slug = models.SlugField(primary_key=True)
     image = models.ImageField(upload_to='collection_image', blank=True, null=True)
-    name = models.CharField(max_length=220, unique=True, null=True)
+    name = models.CharField(max_length=220, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 """Публичная оферта"""
@@ -101,12 +106,27 @@ def save(self):
 """Товар"""
 
 
+# CHOOSE_SIZE = [
+#     ('40', '40'),
+#     ('42', '42'),
+#     ('44', '44'),
+#     ('46', '46'),
+#     ('48', '48')
+#
+# ]
+
+
+
+
+
 class Product(models.Model):
-    collections = models.ForeignKey(Collection, related_name='products', on_delete=models.CASCADE)
+    collections = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='product')
     title = models.CharField(max_length=150)
     vendorcode = models.TextField()
     price = models.IntegerField(null=True)
-    # size = forms.MultipleChoiceField(widget=forms.SelectMultiple, choices=CHOOSE_SIZE)
+    # size = models.CharField(max_length=5, choices=CHOOSE_SIZE)
+    size = models.CharField(max_length=20, blank=True, null=True, default='42-50')
+    amount = models.IntegerField(default=5)
     sale = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, verbose_name='Скидка')
     new_price = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True, verbose_name="Описание")
@@ -123,6 +143,18 @@ class Product(models.Model):
             super(Product, self).save()
         else:
             super(Product, self).save()
+
+
+    def save(self):
+        if self.amount != 0:
+            self.price = self.price * self.amount
+            super(Product, self).save()
+        else:
+            super(Product, self).save()
+
+
+    def __str__(self):
+        return f'{self.title}'
 
 
 class ProductImage(models.Model):
