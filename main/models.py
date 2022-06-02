@@ -1,14 +1,19 @@
 from colorfield.fields import ColorField
-from django import forms
 from django.core.validators import RegexValidator
 from django.db import models
+# from django.forms import forms
 from fontawesome_5.fields import IconField
-from rest_framework.fields import FileField
+
+
+"""Главная страница(Слайдер)"""
 
 
 class Main(models.Model):
     image = models.ImageField(upload_to='image', blank=True, null=True)
     link = models.URLField(max_length=500, null=True)
+
+
+"""Преимущества"""
 
 
 class Advantages(models.Model):
@@ -17,11 +22,19 @@ class Advantages(models.Model):
     text = models.TextField()
 
 
+"""Коллекция"""
 
 
 class Collection(models.Model):
+    slug = models.SlugField(primary_key=True)
     image = models.ImageField(upload_to='collection_image', blank=True, null=True)
-    name = models.CharField(max_length=220, unique=True, null=True)
+    name = models.CharField(max_length=220, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+"""Публичная оферта"""
 
 
 class Public(models.Model):
@@ -29,10 +42,16 @@ class Public(models.Model):
     text = models.TextField()
 
 
+"""Новости"""
+
+
 class New(models.Model):
     image = models.ImageField(upload_to='images', blank=True, null=True)
     title = models.CharField(max_length=100, blank=True, null=True)
     text = models.TextField()
+
+
+"""Помощь"""
 
 
 class Help(models.Model):
@@ -42,6 +61,9 @@ class Help(models.Model):
 
 class HelpImage(models.Model):
     image = models.ImageField(upload_to='images')
+
+
+"""О нас"""
 
 
 class About(models.Model):
@@ -54,11 +76,17 @@ class AboutImage(models.Model):
     about = models.ForeignKey(About, on_delete=models.CASCADE, related_name='images')
 
 
+"""Футер"""
+
+
 class Footer(models.Model):
     logo = IconField(blank=True, null=True)
     text = models.TextField(blank=True, null=True)
     phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
     number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True)
+
+
+"""Футер соц.сети"""
 
 
 class FooterTwo(models.Model):
@@ -68,40 +96,65 @@ class FooterTwo(models.Model):
     instagram = models.URLField(max_length=500, blank=True, null=True)
     email = models.URLField(max_length=500, blank=True, null=True)
     whatsapp = models.CharField(validators=[phoneNumberRegex], max_length=16, null=True, blank=True)
-    def save(self):
-        self.whatsapp = 'https://wa.me/' + str(self.whatsapp)
-        super(FooterTwo, self).save()
+
+
+def save(self):
+    self.whatsapp = 'https://wa.me/' + str(self.whatsapp)
+    super(FooterTwo, self).save()
+
+
+"""Товар"""
+
+
+# CHOOSE_SIZE = [
+#     ('40', '40'),
+#     ('42', '42'),
+#     ('44', '44'),
+#     ('46', '46'),
+#     ('48', '48')
+#
+# ]
 
 
 
-
-
-
-CHOOSE_SIZE = [
-    ('42', '42'),
-    ('44', '44'),
-    ('46', '46'),
-    ('48', '48'),
-    ('50', '50'),
-]
 
 
 class Product(models.Model):
-    collections = models.ForeignKey(Collection, related_name='products', on_delete=models.CASCADE)
+    collections = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='product')
     title = models.CharField(max_length=150)
     vendorcode = models.TextField()
-    old_price = models.DecimalField(max_digits=10, decimal_places=2)
-    size = forms.MultipleChoiceField(widget=forms.SelectMultiple, choices=CHOOSE_SIZE)
-    sale = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name='Скидка')
+    price = models.IntegerField(null=True)
+    # size = models.CharField(max_length=5, choices=CHOOSE_SIZE)
+    size = models.CharField(max_length=20, blank=True, null=True, default='42-50')
+    amount = models.IntegerField(default=5)
+    sale = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, verbose_name='Скидка')
+    new_price = models.IntegerField(blank=True, null=True)
     description = models.TextField(blank=True, verbose_name="Описание")
     material = models.CharField(max_length=200)
     structure = models.CharField(max_length=200)
-    new = models.BooleanField(default=False)
-    hit = models.BooleanField(default=False)
+    new = models.BooleanField(default=False, blank=True, null=True)
+    hit = models.BooleanField(default=False, blank=True, null=True)
+    favorite = models.BooleanField(default=False, blank=True, null=True)
 
-    def get_sale(self):
-        prise = int((self.old_price * (100 - self.sale) / 100))
-        return prise
+    def save(self):
+        if self.sale != 0:
+            new = (self.price * self.sale) / 100
+            self.new_price = self.price - new
+            super(Product, self).save()
+        else:
+            super(Product, self).save()
+
+
+    def save(self):
+        if self.amount != 0:
+            self.price = self.price * self.amount
+            super(Product, self).save()
+        else:
+            super(Product, self).save()
+
+
+    def __str__(self):
+        return f'{self.title}'
 
 
 class ProductImage(models.Model):
@@ -110,10 +163,13 @@ class ProductImage(models.Model):
     color = ColorField()
 
 
-
-class Favorite(models.Model):
-    post = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favourites')
-    favorite = models.BooleanField(default=False)
+"""Обратный звонок"""
 
 
-
+class BackCall(models.Model):
+    name = models.CharField(max_length=200, blank=True, null=True)
+    phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
+    number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True, null=True, blank=True)
+    data = models.DateTimeField()
+    types = models.CharField(max_length=200)
+    status = models.BooleanField(blank=True, null=True, default=False)
