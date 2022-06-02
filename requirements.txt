@@ -1,0 +1,10 @@
+Django
+Pillow
+psycopg2-binary
+djangorestframework
+django-colorfield
+drf-yasg
+django-ckeditor
+django-fontawesome-5
+django-phonenumber-field
+phonenumbers
