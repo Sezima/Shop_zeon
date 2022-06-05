@@ -1,13 +1,14 @@
+from requests import Response
 from rest_framework import serializers
 
 from .models import *
-
 
 """Коллекция"""
 
 
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
+        verbose_name = 'Коллекция'
         model = Collection
         fields = '__all__'
 
@@ -117,7 +118,7 @@ class FooterTwoSerializer(serializers.ModelSerializer):
 class CollProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'price', 'images', 'title', 'new_price', 'sale', 'favorite', 'size', 'new', 'hit')
+        fields = ('id', 'price', 'images', 'title', 'new_price', 'sale', 'favorites', 'size', 'new', 'hit')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -131,7 +132,7 @@ class CollProductSerializer(serializers.ModelSerializer):
 class NewProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit', 'size')
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorites', 'new', 'hit', 'size')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -145,7 +146,7 @@ class NewProductSerializer(serializers.ModelSerializer):
 class HitProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit', 'size')
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorites', 'new', 'hit', 'size')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -169,3 +170,22 @@ class AdvantagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advantages
         fields = ('icon', 'title', 'text')
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+
+    def create(self, validated_data):
+        post = validated_data.get('post')
+        favorite = Favorite.objects.get_or_create(post=post)[0]
+        favorite.favorites = True if favorite.favorites is False else False
+        favorite.save()
+        return favorite
+
+
+
+
+

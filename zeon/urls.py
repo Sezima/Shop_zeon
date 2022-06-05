@@ -18,10 +18,15 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.routers import DefaultRouter
 
 from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
-    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, CollectionNewListView
+    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, CollectionNewListView, \
+    FavoriteViewSet
+
+router = DefaultRouter()
+router.register('favorites', FavoriteViewSet)
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -36,16 +41,13 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
-# router = DefaultRouter()
-# router.register('favorite', FavoriteViewSet)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', schema_view.with_ui()),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/v1/collection/', CollectionListView.as_view()),
     path('api/v1/public/', PublicListView.as_view()),
-    path('api/v1/favorite/', PublicListView.as_view()),
+    # path('api/v1/favorite/', PublicListView.as_view()),
     path('api/v1/news/', NewListView.as_view()),
     # path('api/v1/footer/', FooterListView.as_view()),
     # path('api/v1/footerTwo/', FooterTwoListView.as_view()),
@@ -62,6 +64,6 @@ urlpatterns = [
     path('api/v1/newproduct/', NewProductListView.as_view()),
     path('api/v1/hitproduct/', HitProductListView.as_view()),
     path('api/v1/mainsite/', MainSiteAPIView.as_view()),
-
+    path('api/v1/', include(router.urls)),
 
 ]

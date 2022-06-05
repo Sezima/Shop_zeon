@@ -1,18 +1,14 @@
-from django.db.models import Q
-from django.views.generic import DeleteView
-from requests import Response
-from rest_framework import generics
-from rest_framework.decorators import action
+from rest_framework import generics, viewsets
 from rest_framework.filters import SearchFilter
+from rest_framework.generics import DestroyAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from drf_multiple_model.views import ObjectMultipleModelAPIView
-
 from .models import *
 from .serializers import CollectionSerializer, PublicSerializer, NewSerializer, HelpSerializer, \
     AboutSerializer, AboutImageSerializer, ProductSerializer, FooterSerializer, \
     FooterTwoSerializer, HelpImageSerializer, CollProductSerializer, NewProductSerializer, \
-    MainSerializer, AdvantagesSerializer, HitProductSerializer
+    MainSerializer, AdvantagesSerializer, HitProductSerializer, FavoriteSerializer
 
 
 class PaginationClass(PageNumberPagination):
@@ -106,10 +102,6 @@ class ProductListView(generics.ListAPIView):
     pagination_class = PaginationClass
 
 
-
-
-
-
 # class FooterListView(generics.ListAPIView):
 #     queryset = Footer.objects.all()
 #     serializer_class = FooterSerializer
@@ -138,7 +130,7 @@ class FooterAPIView(ObjectMultipleModelAPIView):
 
 class CollProductListView(generics.ListAPIView):
     """Коллекция(товар)"""
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(Collection)
     serializer_class = CollProductSerializer
     permission_classes = [AllowAny, ]
     pagination_class = PaginationsClass
@@ -168,8 +160,11 @@ class MainSiteAPIView(ObjectMultipleModelAPIView):
         {'queryset': Collection.objects.all(), 'serializer_class': CollectionSerializer},
         {'queryset': Advantages.objects.all(), 'serializer_class': AdvantagesSerializer},
     ]
-    pagination_class = PaginationClass
 
 
+"""Нравится"""
 
 
+class FavoriteViewSet(viewsets.ModelViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer

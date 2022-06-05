@@ -200,3 +200,5 @@ CKEDITOR_CONFIGS = {
     }
 }
 
+CART_SESSION_ID = 'cart'
+
