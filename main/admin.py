@@ -34,6 +34,7 @@ class AboutAdminForm(forms.ModelForm):
     text = forms.CharField(widget=CKEditorUploadingWidget)
 
     class Meta:
+        verbose_name = "О нас"
         model = About
         fields = '__all__'
 
@@ -45,7 +46,7 @@ class AboutAdmin(admin.ModelAdmin):
 class AboutImageInline(admin.TabularInline):
     model = AboutImage
     max_num = 3
-    min_num = 1
+    min_num = 3
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -122,4 +123,6 @@ admin.site.register(Footer)
 admin.site.unregister(HelpImage)
 admin.site.register(HelpImage, HelpImageAdmin)
 admin.site.register(BackCall)
-admin.site.register(Favorite)
+# admin.site.register(Favorite)
+admin.site.register(User)
+

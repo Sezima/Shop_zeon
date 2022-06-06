@@ -8,7 +8,12 @@ from fontawesome_5.fields import IconField
 
 class Main(models.Model):
     image = models.ImageField(upload_to='image', verbose_name="Фотография")
-    link = models.URLField(max_length=500, verbose_name="Ссылка")
+    link = models.URLField(max_length=500, blank=True, verbose_name="Ссылка")
+
+    class Meta:
+        verbose_name = 'Главная страница'
+        verbose_name_plural = 'Главная страница'
+
 
 
 """Преимущества"""
@@ -18,6 +23,10 @@ class Advantages(models.Model):
     icon = models.FileField( verbose_name="Иконка")
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Описание")
+
+    class Meta:
+        verbose_name = 'Наши преимущества'
+        verbose_name_plural = 'Наши преимущества'
 
 
 """Коллекция"""
@@ -31,12 +40,23 @@ class Collection(models.Model):
         return self.name
 
 
+    class Meta:
+        verbose_name = 'Коллекция'
+        verbose_name_plural = 'Коллекция'
+
+
+
+
 """Публичная оферта"""
 
 
 class Public(models.Model):
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Описание")
+
+    class Meta:
+        verbose_name = 'Публичная оферта'
+        verbose_name_plural = 'Публичная оферта'
 
 
 """Новости"""
@@ -47,6 +67,10 @@ class New(models.Model):
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Описание")
 
+    class Meta:
+        verbose_name = 'Новости'
+        verbose_name_plural = 'Новости'
+
 
 """Помощь"""
 
@@ -55,9 +79,18 @@ class Help(models.Model):
     question = models.TextField(verbose_name="Вопрос")
     answer = models.TextField(verbose_name="Ответ")
 
+    class Meta:
+        verbose_name = 'Помощь'
+        verbose_name_plural = 'Помощь'
+
 
 class HelpImage(models.Model):
     image = models.ImageField(upload_to='images', verbose_name="Фотография")
+
+
+    class Meta:
+        verbose_name = 'Помощь фото'
+        verbose_name_plural = 'Помощь фото'
 
 
 """О нас"""
@@ -66,6 +99,10 @@ class HelpImage(models.Model):
 class About(models.Model):
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     text = models.TextField(blank=True, verbose_name="Описание")
+
+    class Meta:
+        verbose_name = 'О нас'
+        verbose_name_plural = 'О нас'
 
 
 class AboutImage(models.Model):
@@ -82,6 +119,10 @@ class Footer(models.Model):
     phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
     number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True, verbose_name="Номер хедера")
 
+    class Meta:
+        verbose_name = 'Футер'
+        verbose_name_plural = 'Футер'
+
 
 """Футер соц.сети"""
 
@@ -92,11 +133,19 @@ class FooterTwo(models.Model):
     telegram = models.URLField(max_length=500, blank=True, null=True)
     instagram = models.URLField(max_length=500, blank=True, null=True)
     email = models.URLField(max_length=500, blank=True, null=True)
-    whatsapp = models.CharField(validators=[phoneNumberRegex], max_length=16, null=True, blank=True)
+    whatsapp = models.CharField(null=True, blank=True, max_length=250)
 
     def save(self):
-        self.whatsapp = 'https://wa.me/' + str(self.whatsapp)
-        super(FooterTwo, self).save()
+        if self.whatsapp.isdigit() or self.whatsapp.startswith('+'):
+            self.whatsapp = 'https://wa.me/' + str(self.whatsapp)
+            super(FooterTwo, self).save()
+        else:
+            super(FooterTwo, self).save()
+
+
+    class Meta:
+        verbose_name = 'Футер соц.сети'
+        verbose_name_plural = 'Футер соц.сети'
 
 
 """Товар"""
@@ -118,16 +167,16 @@ class Product(models.Model):
     title = models.CharField(max_length=150, verbose_name="Название товара")
     vendorcode = models.TextField(verbose_name="Артикул товара")
     price = models.IntegerField(verbose_name="Цена")
-    # size = models.CharField(max_length=5, choices=CHOOSE_SIZE)
-    size = models.CharField(max_length=20, blank=True, null=True, default='42-50', verbose_name="Размер")
+    size = models.CharField(max_length=20, default='42-50', verbose_name="Размер")
     amount = models.IntegerField(default=5, verbose_name="Количество в линейке")
     sale = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, verbose_name='Скидка')
     new_price = models.IntegerField(blank=True, null=True, verbose_name="Новая цена")
-    description = models.TextField(blank=True, verbose_name="Описание")
+    description = models.TextField(verbose_name="Описание")
     material = models.CharField(max_length=200, verbose_name="Материал")
     structure = models.CharField(max_length=200, verbose_name="Состав ткани")
-    new = models.BooleanField(default=False, blank=True, null=True, verbose_name="Новинки")
-    hit = models.BooleanField(default=False, blank=True, null=True, verbose_name="Хит продаж")
+    new = models.BooleanField(verbose_name="Новинки")
+    hit = models.BooleanField(verbose_name="Хит продаж")
+    favorites = models.BooleanField(verbose_name="Избранные")
     # like = models.BooleanField(default=False, blank=True, null=True)
 
     def save(self):
@@ -142,6 +191,10 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.title}'
 
+
+    class Meta:
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товар'
 
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='products', blank=True, null=True, verbose_name="Фотография")
@@ -160,10 +213,40 @@ class BackCall(models.Model):
     types = models.CharField(max_length=200, verbose_name="Тип обращения", default='Обратный звонок')
     status = models.BooleanField(blank=True, null=True, default=False, verbose_name="Статус")
 
+    class Meta:
+        verbose_name = 'Обратный звонок'
+        verbose_name_plural = 'Обратный звонок'
 
-class Favorite(models.Model):
-    favorites = models.BooleanField(default=False)
-    post = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorites')
 
-    def __str__(self):
-        return str(self.favorites)
+# class Favorite(models.Model):
+#     favorites = models.BooleanField(default=False)
+#     post = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorites')
+#
+#     def __str__(self):
+#         return str(self.favorites)
+
+
+"""заказ инфо о юзере"""
+
+
+STATUS = (
+    ('new', 'новый'),
+    ('order', 'оформлен'),
+    ('cancel', 'отмена')
+)
+class User(models.Model):
+    name = models.CharField(max_length=250, verbose_name='Имя')
+    last_name = models.CharField(max_length=250, verbose_name='Фамилия')
+    email = models.EmailField(verbose_name='Электронная почта')
+    phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
+    number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True, verbose_name="Номер телефона")
+    country = models.CharField(max_length=150, verbose_name='Страна')
+    city = models.CharField(max_length=150, verbose_name='Город')
+    date = models.DateField(verbose_name='Дата оформления')
+    status = models.CharField(max_length=100, choices=STATUS, default='new', verbose_name='Статус заказа')
+
+
+    class Meta:
+        verbose_name = 'Информация юзера'
+        verbose_name_plural = 'Информация юзера'
+

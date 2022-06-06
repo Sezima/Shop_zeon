@@ -22,11 +22,10 @@ from rest_framework.routers import DefaultRouter
 
 from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
-    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, CollectionNewListView, \
-    FavoriteViewSet
+    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, FavProductListView, \
+    CollectionNewListView, DetailListView, BackCallList, UserListView, ProductRandomView
 
-router = DefaultRouter()
-router.register('favorites', FavoriteViewSet)
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -63,7 +62,12 @@ urlpatterns = [
     path('api/v1/collproduct/', CollProductListView.as_view()),
     path('api/v1/newproduct/', NewProductListView.as_view()),
     path('api/v1/hitproduct/', HitProductListView.as_view()),
+    path('api/v1/favorite/', FavProductListView.as_view()),
+    path('api/v1/user/', UserListView.as_view()),
+    path('api/v1/random/', ProductRandomView.as_view()),
+    path('api/v1/backcall/', BackCallList.as_view()),
     path('api/v1/mainsite/', MainSiteAPIView.as_view()),
-    path('api/v1/', include(router.urls)),
+    path('api/v1/detail/<int:pk>/', DetailListView.as_view()),
+    # path('api/v1/', include(router.urls)),
 
 ]
