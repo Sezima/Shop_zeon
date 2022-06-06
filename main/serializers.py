@@ -1,4 +1,3 @@
-from requests import Response
 from rest_framework import serializers
 
 from .models import *
@@ -68,7 +67,6 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
@@ -119,12 +117,10 @@ class CollProductSerializer(serializers.ModelSerializer):
         model = Collection
         fields = '__all__'
 
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['product'] = ProductSerializer(instance.product.all(), many=True).data
         return representation
-
 
 
 """Новинки"""
@@ -188,6 +184,8 @@ class AdvantagesSerializer(serializers.ModelSerializer):
 
 
 """Избранные"""
+
+
 class FavProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -199,8 +197,6 @@ class FavProductSerializer(serializers.ModelSerializer):
         return representation
 
 
-
-
 """товары этой коллекции"""
 
 
@@ -210,13 +206,10 @@ class DetailSerializer(serializers.ModelSerializer):
         model = Collection
         fields = ('id', )
 
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['product'] = ProductSerializer(instance.product.all(), many=True).data
         return representation
-
-
 
 
 """Обратный звонок"""
@@ -229,12 +222,9 @@ class BackCallSerializer(serializers.ModelSerializer):
 
 
 """Информация юзера"""
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
-
-
-
-
-

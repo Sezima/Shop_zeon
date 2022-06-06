@@ -15,12 +15,11 @@ class Main(models.Model):
         verbose_name_plural = 'Главная страница'
 
 
-
 """Преимущества"""
 
 
 class Advantages(models.Model):
-    icon = models.FileField( verbose_name="Иконка")
+    icon = models.FileField(verbose_name="Иконка")
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Описание")
 
@@ -39,12 +38,9 @@ class Collection(models.Model):
     def __str__(self):
         return self.name
 
-
     class Meta:
         verbose_name = 'Коллекция'
         verbose_name_plural = 'Коллекция'
-
-
 
 
 """Публичная оферта"""
@@ -86,7 +82,6 @@ class Help(models.Model):
 
 class HelpImage(models.Model):
     image = models.ImageField(upload_to='images', verbose_name="Фотография")
-
 
     class Meta:
         verbose_name = 'Помощь фото'
@@ -142,7 +137,6 @@ class FooterTwo(models.Model):
         else:
             super(FooterTwo, self).save()
 
-
     class Meta:
         verbose_name = 'Футер соц.сети'
         verbose_name_plural = 'Футер соц.сети'
@@ -187,14 +181,13 @@ class Product(models.Model):
         else:
             super(Product, self).save()
 
-
     def __str__(self):
         return f'{self.title}'
-
 
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товар'
+
 
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='products', blank=True, null=True, verbose_name="Фотография")
@@ -208,7 +201,8 @@ class ProductImage(models.Model):
 class BackCall(models.Model):
     name = models.CharField(max_length=200, blank=True, null=True, verbose_name="Имя")
     phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
-    number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True, null=True, blank=True, verbose_name="Номер телефона")
+    number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True,
+                              null=True, blank=True, verbose_name="Номер телефона")
     data = models.DateTimeField(verbose_name="Дата обращения")
     types = models.CharField(max_length=200, verbose_name="Тип обращения", default='Обратный звонок')
     status = models.BooleanField(blank=True, null=True, default=False, verbose_name="Статус")
@@ -234,6 +228,8 @@ STATUS = (
     ('order', 'оформлен'),
     ('cancel', 'отмена')
 )
+
+
 class User(models.Model):
     name = models.CharField(max_length=250, verbose_name='Имя')
     last_name = models.CharField(max_length=250, verbose_name='Фамилия')
@@ -245,8 +241,6 @@ class User(models.Model):
     date = models.DateField(verbose_name='Дата оформления')
     status = models.CharField(max_length=100, choices=STATUS, default='new', verbose_name='Статус заказа')
 
-
     class Meta:
         verbose_name = 'Информация юзера'
         verbose_name_plural = 'Информация юзера'
-

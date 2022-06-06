@@ -18,13 +18,11 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-from rest_framework.routers import DefaultRouter
 
 from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
     CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, FavProductListView, \
-    CollectionNewListView, DetailListView, BackCallList, UserListView, ProductRandomView
-
+    CollectionNewListView, DetailListView, BackCallList, UserListView
 
 
 schema_view = get_schema_view(
@@ -46,14 +44,7 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/v1/collection/', CollectionListView.as_view()),
     path('api/v1/public/', PublicListView.as_view()),
-    # path('api/v1/favorite/', PublicListView.as_view()),
     path('api/v1/news/', NewListView.as_view()),
-    # path('api/v1/footer/', FooterListView.as_view()),
-    # path('api/v1/footerTwo/', FooterTwoListView.as_view()),
-    # path('api/v1/help/', HelpListView.as_view()),
-    # path('api/v1/helpimage/', HelpImageListView.as_view()),
-    # path('api/v1/about/', AboutListView.as_view()),
-    # path('api/v1/aboutimage/', AboutImageListView.as_view()),
     path('api/v1/product/', ProductListView.as_view()),
     path('api/v1/collectionnew/', CollectionNewListView.as_view()),
     path('api/v1/help/', HelpAPIView.as_view()),
@@ -64,10 +55,8 @@ urlpatterns = [
     path('api/v1/hitproduct/', HitProductListView.as_view()),
     path('api/v1/favorite/', FavProductListView.as_view()),
     path('api/v1/user/', UserListView.as_view()),
-    path('api/v1/random/', ProductRandomView.as_view()),
     path('api/v1/backcall/', BackCallList.as_view()),
     path('api/v1/mainsite/', MainSiteAPIView.as_view()),
     path('api/v1/detail/<int:pk>/', DetailListView.as_view()),
-    # path('api/v1/', include(router.urls)),
 
 ]
