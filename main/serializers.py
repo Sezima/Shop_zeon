@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from .models import *
 
-
 """Коллекция"""
 
 
@@ -68,7 +67,6 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
@@ -116,12 +114,12 @@ class FooterTwoSerializer(serializers.ModelSerializer):
 
 class CollProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
-        fields = ('id', 'price', 'images', 'title', 'new_price', 'sale', 'favorite', 'size', 'new', 'hit')
+        model = Collection
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
+        representation['product'] = ProductSerializer(instance.product.all(), many=True).data
         return representation
 
 
@@ -131,7 +129,7 @@ class CollProductSerializer(serializers.ModelSerializer):
 class NewProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit', 'size')
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorites', 'new', 'hit', 'size')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -145,7 +143,7 @@ class NewProductSerializer(serializers.ModelSerializer):
 class HitProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorite', 'new', 'hit', 'size')
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorites', 'new', 'hit', 'size')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -169,3 +167,64 @@ class AdvantagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advantages
         fields = ('icon', 'title', 'text')
+
+
+# class FavoriteSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Favorite
+#         fields = '__all__'
+#
+#     def create(self, validated_data):
+#         post = validated_data.get('post')
+#         favorite = Favorite.objects.get_or_create(post=post)[0]
+#         favorite.favorites = True if favorite.favorites is False else False
+#         favorite.save()
+#         return favorite
+
+
+"""Избранные"""
+
+
+class FavProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorites', 'new', 'hit', 'size')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
+        return representation
+
+
+"""товары этой коллекции"""
+
+
+class DetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Collection
+        fields = ('id', )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['product'] = ProductSerializer(instance.product.all(), many=True).data
+        return representation
+
+
+"""Обратный звонок"""
+
+
+class BackCallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BackCall
+        fields = ('name', 'number', 'types')
+
+
+"""Информация юзера"""
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'

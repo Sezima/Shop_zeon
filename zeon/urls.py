@@ -21,7 +21,9 @@ from rest_framework import permissions
 
 from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
-    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, CollectionNewListView
+    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, FavProductListView, \
+    CollectionNewListView, DetailListView, BackCallList, UserListView
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -36,23 +38,13 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
-# router = DefaultRouter()
-# router.register('favorite', FavoriteViewSet)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', schema_view.with_ui()),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/v1/collection/', CollectionListView.as_view()),
     path('api/v1/public/', PublicListView.as_view()),
-    path('api/v1/favorite/', PublicListView.as_view()),
     path('api/v1/news/', NewListView.as_view()),
-    # path('api/v1/footer/', FooterListView.as_view()),
-    # path('api/v1/footerTwo/', FooterTwoListView.as_view()),
-    # path('api/v1/help/', HelpListView.as_view()),
-    # path('api/v1/helpimage/', HelpImageListView.as_view()),
-    # path('api/v1/about/', AboutListView.as_view()),
-    # path('api/v1/aboutimage/', AboutImageListView.as_view()),
     path('api/v1/product/', ProductListView.as_view()),
     path('api/v1/collectionnew/', CollectionNewListView.as_view()),
     path('api/v1/help/', HelpAPIView.as_view()),
@@ -61,7 +53,10 @@ urlpatterns = [
     path('api/v1/collproduct/', CollProductListView.as_view()),
     path('api/v1/newproduct/', NewProductListView.as_view()),
     path('api/v1/hitproduct/', HitProductListView.as_view()),
+    path('api/v1/favorite/', FavProductListView.as_view()),
+    path('api/v1/user/', UserListView.as_view()),
+    path('api/v1/backcall/', BackCallList.as_view()),
     path('api/v1/mainsite/', MainSiteAPIView.as_view()),
-
+    path('api/v1/detail/<int:pk>/', DetailListView.as_view()),
 
 ]
