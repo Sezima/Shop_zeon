@@ -1,3 +1,6 @@
+import json
+
+from django.http import HttpResponse
 from rest_framework import serializers
 
 from .models import *
@@ -78,6 +81,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = '__all__'
 
+    # не проверен
+
     def _get_image_url(self, obj):
         if obj.image:
             url = obj.image.url
@@ -87,6 +92,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
         else:
             url = ''
         return url
+
+
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -169,18 +176,6 @@ class AdvantagesSerializer(serializers.ModelSerializer):
         fields = ('icon', 'title', 'text')
 
 
-# class FavoriteSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Favorite
-#         fields = '__all__'
-#
-#     def create(self, validated_data):
-#         post = validated_data.get('post')
-#         favorite = Favorite.objects.get_or_create(post=post)[0]
-#         favorite.favorites = True if favorite.favorites is False else False
-#         favorite.save()
-#         return favorite
 
 
 """Избранные"""
@@ -195,6 +190,8 @@ class FavProductSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['images'] = ProductImageSerializer(instance.images.all(), many=True).data
         return representation
+
+
 
 
 """товары этой коллекции"""
@@ -212,6 +209,8 @@ class DetailSerializer(serializers.ModelSerializer):
         return representation
 
 
+
+
 """Обратный звонок"""
 
 
@@ -223,8 +222,79 @@ class BackCallSerializer(serializers.ModelSerializer):
 
 """Информация юзера"""
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+
+
+
+class OrderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Order
+        fields = ('product', 'quantity')
+
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['images'] = ProductImageSerializer(instance.product.images.all(), many=True).data
+        representation['name'] = instance.product.title
+        representation['price'] = instance.product.price
+        representation['size'] = instance.product.size
+        representation['new_price'] = instance.product.new_price
+        return representation
+
+
+
+
+
+
+
+
+
+class CaseSerializer(serializers.ModelSerializer):
+    """корзина"""
+    class Meta:
+        model = Case
+        fields = '__all__'
+
+
+    def create(self, validated_data):
+        post = validated_data.get('post')
+        case = Case.objects.get_or_create(post=post)[0]
+        case.cases = True if case.cases is False else False
+        case.save()
+        return case
+
+
+
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        representation['images'] = ProductImageSerializer(instance.cart.images.all(), many=True).data
+        representation['name'] = instance.cart.title
+        representation['price'] = instance.cart.price
+        representation['size'] = instance.cart.size
+        representation['new_price'] = instance.cart.new_price
+        return representation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

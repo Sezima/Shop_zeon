@@ -79,6 +79,19 @@ class HelpImageAdmin(admin.ModelAdmin):
     form = HelpImageAdminForm
 
 
+"""Заказ"""
+
+
+class OrderInline(admin.TabularInline):
+    model = Order
+    raw_id_fields = ['product']
+
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'last_name', 'email', 'city']
+    inlines = [OrderInline]
+
+
 @admin.register(Public)
 class PublicAdmin(admin.ModelAdmin):
     form = PublicAdminForm
@@ -106,6 +119,7 @@ class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
 
 
+
 admin.site.unregister(Product)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Main)
@@ -123,6 +137,5 @@ admin.site.register(Footer)
 admin.site.unregister(HelpImage)
 admin.site.register(HelpImage, HelpImageAdmin)
 admin.site.register(BackCall)
-# admin.site.register(Favorite)
-admin.site.register(User)
-
+admin.site.register(Case)
+admin.site.register(User, OrderAdmin)

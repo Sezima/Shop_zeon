@@ -18,13 +18,16 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.routers import DefaultRouter
 
 from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
     CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, FavProductListView, \
-    CollectionNewListView, DetailListView, BackCallList, UserListView
+    CollectionNewListView, DetailListView, BackCallList, OrderAPIView, OrderListView, UserListView,\
+    CaseViewSet
 
-
+router = DefaultRouter()
+router.register('cart', CaseViewSet)
 schema_view = get_schema_view(
    openapi.Info(
       title="Snippets API",
@@ -54,9 +57,15 @@ urlpatterns = [
     path('api/v1/newproduct/', NewProductListView.as_view()),
     path('api/v1/hitproduct/', HitProductListView.as_view()),
     path('api/v1/favorite/', FavProductListView.as_view()),
-    path('api/v1/user/', UserListView.as_view()),
     path('api/v1/backcall/', BackCallList.as_view()),
     path('api/v1/mainsite/', MainSiteAPIView.as_view()),
     path('api/v1/detail/<int:pk>/', DetailListView.as_view()),
+    path('api/v1/user/<int:pk>/', UserListView.as_view()),
+    path('api/v1/item/', OrderListView.as_view()),
+    path('api/v1/order/', OrderAPIView.as_view()),
+    path('api/v1/', include(router.urls)),
+    # path('api/v1/case/', CaseListView.as_view()),
+
+
 
 ]

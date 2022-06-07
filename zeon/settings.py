@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'zeon',
     'main',
+    'cart',
     'drf_yasg',
     'colorfield',
     'ckeditor',

@@ -3,6 +3,8 @@ from django.core.validators import RegexValidator
 from django.db import models
 from fontawesome_5.fields import IconField
 
+from zeon import settings
+
 """Главная страница(Слайдер)"""
 
 
@@ -171,7 +173,6 @@ class Product(models.Model):
     new = models.BooleanField(verbose_name="Новинки")
     hit = models.BooleanField(verbose_name="Хит продаж")
     favorites = models.BooleanField(verbose_name="Избранные")
-    # like = models.BooleanField(default=False, blank=True, null=True)
 
     def save(self):
         if self.sale != 0:
@@ -212,13 +213,6 @@ class BackCall(models.Model):
         verbose_name_plural = 'Обратный звонок'
 
 
-# class Favorite(models.Model):
-#     favorites = models.BooleanField(default=False)
-#     post = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorites')
-#
-#     def __str__(self):
-#         return str(self.favorites)
-
 
 """заказ инфо о юзере"""
 
@@ -242,5 +236,50 @@ class User(models.Model):
     status = models.CharField(max_length=100, choices=STATUS, default='new', verbose_name='Статус заказа')
 
     class Meta:
-        verbose_name = 'Информация юзера'
-        verbose_name_plural = 'Информация юзера'
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказ'
+
+
+
+
+"""Заказ"""
+
+
+class Order(models.Model):
+    order = models.ForeignKey(User, related_name='users', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name='product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return '{}'.format(self.id)
+
+    def get_cost(self):
+        return self.product.price * self.quantity
+
+    # def save(self, obj):   до делать
+
+
+
+
+"""Корзина"""
+
+
+
+class Case(models.Model):
+    cases = models.BooleanField(default=False)
+    cart = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cases')
+    quantity = models.PositiveIntegerField(default=1)
+
+
+    def __str__(self):
+        return str(self.cases)
+
+
+    class Meta:
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзина'
+
+
+
+
+
