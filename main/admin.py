@@ -18,12 +18,15 @@ class PublicAdmin(admin.ModelAdmin):
     form = PublicAdminForm
 
 
+
+
 class NewAdminForm(forms.ModelForm):
     text = forms.CharField(widget=CKEditorUploadingWidget)
 
     class Meta:
         model = New
         fields = '__all__'
+
 
 
 class NewAdmin(admin.ModelAdmin):
@@ -42,11 +45,17 @@ class AboutAdminForm(forms.ModelForm):
 class AboutAdmin(admin.ModelAdmin):
     form = AboutAdminForm
 
+    # это поможет мне что ограничить
+    def has_add_permission(self, request, obj=None):
+        return False
+
 
 class AboutImageInline(admin.TabularInline):
     model = AboutImage
     max_num = 3
     min_num = 3
+
+
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -75,8 +84,15 @@ class HelpImageAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
+
+
 class HelpImageAdmin(admin.ModelAdmin):
     form = HelpImageAdminForm
+
+    # def has_add_permission(self, request, obj=None):
+    #     return False
+
+
 
 
 """Заказ"""
@@ -90,6 +106,10 @@ class OrderInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'last_name', 'email', 'city']
     inlines = [OrderInline]
+
+
+
+
 
 
 @admin.register(Public)

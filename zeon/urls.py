@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
     CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, FavProductListView, \
-    CollectionNewListView, DetailListView, BackCallList, OrderAPIView, OrderListView, UserListView,\
+    CollectionNewListView, DetailListView, BackCallList, OrderAPIView, OrderListView, UserListView, \
     CaseViewSet
 
 router = DefaultRouter()
@@ -64,6 +64,7 @@ urlpatterns = [
     path('api/v1/item/', OrderListView.as_view()),
     path('api/v1/order/', OrderAPIView.as_view()),
     path('api/v1/', include(router.urls)),
+    # path('api/v1/comon/', ComonListView.as_view()),
     # path('api/v1/case/', CaseListView.as_view()),
 
 

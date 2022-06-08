@@ -10,7 +10,7 @@ from .serializers import CollectionSerializer, PublicSerializer, NewSerializer, 
     AboutSerializer, AboutImageSerializer, ProductSerializer, FooterSerializer, \
     FooterTwoSerializer, HelpImageSerializer, CollProductSerializer, NewProductSerializer, \
     MainSerializer, AdvantagesSerializer, HitProductSerializer, FavProductSerializer, \
-    DetailSerializer, BackCallSerializer, OrderSerializer, UserSerializer, CaseSerializer  # FavoriteSerializer
+    DetailSerializer, BackCallSerializer, OrderSerializer, UserSerializer, CaseSerializer
 
 
 class PaginationClass(PageNumberPagination):
@@ -48,18 +48,6 @@ class NewListView(generics.ListAPIView):
     serializer_class = NewSerializer
     permission_classes = [AllowAny, ]
     pagination_class = PaginationClass
-
-
-# class HelpListView(generics.ListAPIView):
-#     queryset = Help.objects.all()
-#     serializer_class = HelpSerializer
-#     permission_classes = [AllowAny, ]
-#
-#
-# class HelpImageListView(generics.ListAPIView):
-#     queryset = HelpImage.objects.all()
-#     serializer_class = HelpImageSerializer
-#     permission_classes = [AllowAny, ]
 
 
 class HelpAPIView(ObjectMultipleModelAPIView):
@@ -102,31 +90,12 @@ class ProductListView(generics.ListAPIView):
     pagination_class = PaginationClass
 
 
-    """5шт рандомные товары"""
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        if not queryset:
-            queryset = set(Product.objects.values_list('collections', flat=True))
-            queryset = [random.choice(Product.objects.filter(collections=i)) for i in queryset]
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-
-
-
 class FooterAPIView(ObjectMultipleModelAPIView):
     """Футер"""
     querylist = [
         {'queryset': Footer.objects.all(), 'serializer_class': FooterSerializer},
         {'queryset': FooterTwo.objects.all(), 'serializer_class': FooterTwoSerializer},
     ]
-
 
 
 class CollProductListView(generics.ListAPIView):
@@ -172,23 +141,6 @@ class FavProductListView(generics.ListAPIView):
     permission_classes = [AllowAny, ]
     pagination_class = PaginationsClass
 
-    """5шт рандомные товары"""
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        if not queryset:
-            queryset = set(Product.objects.values_list('collections', flat=True))
-            queryset = [random.choice(Product.objects.filter(collections=i)) for i in queryset]
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-
-
 
 """Товары одной коллекции"""
 
@@ -197,8 +149,6 @@ class DetailListView(generics.RetrieveAPIView):
     queryset = Collection.objects.all()
     serializer_class = DetailSerializer
     pagination_class = PaginClass
-
-
 
 
 """Обратный звонок"""
@@ -216,11 +166,10 @@ class UserListView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
 class OrderListView(generics.ListAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
-
 
 
 class OrderAPIView(ObjectMultipleModelAPIView):
@@ -234,11 +183,6 @@ class OrderAPIView(ObjectMultipleModelAPIView):
 
 
 class CaseViewSet(viewsets.ModelViewSet):
-
-        queryset = Case.objects.all()
-        serializer_class = CaseSerializer
-        permission_classes = [AllowAny, ]
-
-
-
-
+    queryset = Case.objects.all()
+    serializer_class = CaseSerializer
+    permission_classes = [AllowAny, ]

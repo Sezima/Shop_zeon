@@ -1,3 +1,5 @@
+from itertools import count
+
 from colorfield.fields import ColorField
 from django.core.validators import RegexValidator
 from django.db import models
@@ -162,25 +164,34 @@ class Product(models.Model):
 
     title = models.CharField(max_length=150, verbose_name="Название товара")
     vendorcode = models.TextField(verbose_name="Артикул товара")
-    price = models.IntegerField(verbose_name="Цена")
+    price = models.IntegerField(verbose_name="Цена", default=0)
     size = models.CharField(max_length=20, default='42-50', verbose_name="Размер")
     amount = models.IntegerField(default=5, verbose_name="Количество в линейке")
-    sale = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True, verbose_name='Скидка')
-    new_price = models.IntegerField(blank=True, null=True, verbose_name="Новая цена")
+    sale = models.IntegerField(default=0, blank=True, verbose_name='Скидка')
+    new_price = models.IntegerField(blank=True, default=0, verbose_name="Новая цена")
     description = models.TextField(verbose_name="Описание")
     material = models.CharField(max_length=200, verbose_name="Материал")
     structure = models.CharField(max_length=200, verbose_name="Состав ткани")
     new = models.BooleanField(verbose_name="Новинки")
     hit = models.BooleanField(verbose_name="Хит продаж")
     favorites = models.BooleanField(verbose_name="Избранные")
-
+    
     def save(self):
-        if self.sale != 0:
-            new = (self.price * self.sale) / 100
-            self.new_price = self.price - new
+        if self.new_price != 0:
+            self.sale = self.price - self.new_price
             super(Product, self).save()
         else:
             super(Product, self).save()
+
+    # def save(self):
+    #     if self.sale != 0:
+    #         new = (self.price * self.sale) / 100
+    #         self.new_price = self.price - new
+    #         super(Product, self).save()
+    #     else:
+    #         super(Product, self).save()
+
+    
 
     def __str__(self):
         return f'{self.title}'
@@ -213,9 +224,7 @@ class BackCall(models.Model):
         verbose_name_plural = 'Обратный звонок'
 
 
-
 """заказ инфо о юзере"""
-
 
 STATUS = (
     ('new', 'новый'),
@@ -240,8 +249,6 @@ class User(models.Model):
         verbose_name_plural = 'Заказ'
 
 
-
-
 """Заказ"""
 
 
@@ -253,16 +260,32 @@ class Order(models.Model):
     def __str__(self):
         return '{}'.format(self.id)
 
-    def get_cost(self):
-        return self.product.price * self.quantity
 
-    # def save(self, obj):   до делать
+    def get_count(self):
+        c = 0
+        cost = 0
+        sale = 0
+        endCost = 0
+        for i in Order.objects.all():
+            c += i.quantity
+            p = c * 5
+            cost += i.quantity * i.product.price
+            endCost = cost - sale
+
+            if i.product.new_price != 0:
+                sale += (i.product.price - i.product.new_price) * i.quantity
+            else:
+                continue
 
 
+        return f'Колличество линейки {c}, ' \
+               f'колличество товаров {p}, ' \
+               f'Стоимость {cost}, ' \
+               f'Скидка {sale}, ' \
+               f'Итог {endCost}, '
 
 
 """Корзина"""
-
 
 
 class Case(models.Model):
@@ -275,11 +298,26 @@ class Case(models.Model):
         return str(self.cases)
 
 
-    class Meta:
-        verbose_name = 'Корзина'
-        verbose_name_plural = 'Корзина'
+
+    def get_count(self):
+        c = 0
+        cost = 0
+        sale = 0
+        endCost = 0
+        for i in Case.objects.all():
+            c += i.quantity
+            p = c * 5
+            cost += i.quantity * i.cart.price
+            endCost = cost - sale
+
+            if i.cart.new_price != 0:
+                sale += (i.cart.price - i.cart.new_price) * i.quantity
+            else:
+                continue
 
 
-
-
-
+        return f'Колличество линейки {c}, ' \
+               f'колличество товаров {p}, ' \
+               f'Стоимость {cost}, ' \
+               f'Скидка {sale}, ' \
+               f'Итог {endCost}, '

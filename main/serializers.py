@@ -234,7 +234,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('product', 'quantity')
+        fields = ('product', 'quantity', 'get_count')
 
 
     def to_representation(self, instance):
@@ -258,7 +258,7 @@ class CaseSerializer(serializers.ModelSerializer):
     """корзина"""
     class Meta:
         model = Case
-        fields = '__all__'
+        fields = ('id', 'quantity', 'get_count')
 
 
     def create(self, validated_data):
@@ -271,6 +271,9 @@ class CaseSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
@@ -279,7 +282,14 @@ class CaseSerializer(serializers.ModelSerializer):
         representation['price'] = instance.cart.price
         representation['size'] = instance.cart.size
         representation['new_price'] = instance.cart.new_price
+
         return representation
+
+
+
+
+
+
 
 
 
