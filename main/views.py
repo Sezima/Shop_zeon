@@ -1,20 +1,29 @@
-import random
-from rest_framework import generics, status, viewsets
+from requests import Response
+from rest_framework import generics, viewsets
+from rest_framework.decorators import api_view
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from drf_multiple_model.views import ObjectMultipleModelAPIView
-from rest_framework.response import Response
 from .models import *
 from .serializers import CollectionSerializer, PublicSerializer, NewSerializer, HelpSerializer, \
     AboutSerializer, AboutImageSerializer, ProductSerializer, FooterSerializer, \
-    FooterTwoSerializer, HelpImageSerializer, CollProductSerializer, NewProductSerializer, \
-    MainSerializer, AdvantagesSerializer, HitProductSerializer, FavProductSerializer, \
-    DetailSerializer, BackCallSerializer, OrderSerializer, UserSerializer, CaseSerializer
+    FooterTwoSerializer, HelpImageSerializer, NewProductSerializer, \
+    MainSerializer, AdvantagesSerializer, HitProductSerializer, \
+    DetailSerializer, BackCallSerializer, UserSerializer, OrderSerializer, CaseSerializer, FavoritesSerializer, \
+     CartSerializer
 
 
 class PaginationClass(PageNumberPagination):
     page_size = 8
+
+
+class PaginClass(PageNumberPagination):
+    page_size = 5
+
+
+class PaginationsClass(PageNumberPagination):
+    page_size = 12
 
 
 class CollectionListView(generics.ListAPIView):
@@ -23,17 +32,6 @@ class CollectionListView(generics.ListAPIView):
     serializer_class = CollectionSerializer
     permission_classes = [AllowAny, ]
     pagination_class = PaginationClass
-
-
-class PaginClass(PageNumberPagination):
-    page_size = 5
-
-
-class CollectionNewListView(generics.ListAPIView):
-    queryset = Product.objects.filter(new=True)
-    serializer_class = CollProductSerializer
-    permission_classes = [AllowAny, ]
-    pagination_class = PaginClass
 
 
 class PublicListView(generics.ListAPIView):
@@ -65,29 +63,20 @@ class AboutAPIView(ObjectMultipleModelAPIView):
     ]
 
 
-# class AboutListView(generics.ListAPIView):
-#     queryset = About.objects.all()
-#     serializer_class = AboutSerializer
-#     permission_classes = [AllowAny, ]
-#
-#
-# class AboutImageListView(generics.ListAPIView):
-#     queryset = About.objects.all()
-#     serializer_class = AboutImageSerializer
-#     permission_classes = [AllowAny, ]
-
-
-class PaginationsClass(PageNumberPagination):
-    page_size = 12
-
-
 class ProductListView(generics.ListAPIView):
+    """Товар"""
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [AllowAny, ]
+    pagination_class = PaginationClass
+
+
+class Search(generics.ListAPIView):
+    """Поиск"""
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
     filter_backends = [SearchFilter]
     search_fields = ['title']
-    pagination_class = PaginationClass
 
 
 class FooterAPIView(ObjectMultipleModelAPIView):
@@ -96,14 +85,6 @@ class FooterAPIView(ObjectMultipleModelAPIView):
         {'queryset': Footer.objects.all(), 'serializer_class': FooterSerializer},
         {'queryset': FooterTwo.objects.all(), 'serializer_class': FooterTwoSerializer},
     ]
-
-
-class CollProductListView(generics.ListAPIView):
-    """Коллекция(товар)"""
-    queryset = Collection.objects.all()
-    serializer_class = CollProductSerializer
-    permission_classes = [AllowAny, ]
-    pagination_class = PaginationsClass
 
 
 class NewProductListView(generics.ListAPIView):
@@ -135,11 +116,9 @@ class MainSiteAPIView(ObjectMultipleModelAPIView):
 """Нравится"""
 
 
-class FavProductListView(generics.ListAPIView):
-    queryset = Product.objects.filter(favorites=True)
-    serializer_class = FavProductSerializer
-    permission_classes = [AllowAny, ]
-    pagination_class = PaginationsClass
+class FavoritesViewSet(viewsets.ModelViewSet):
+    queryset = Favorites.objects.all()
+    serializer_class = FavoritesSerializer
 
 
 """Товары одной коллекции"""
@@ -154,7 +133,7 @@ class DetailListView(generics.RetrieveAPIView):
 """Обратный звонок"""
 
 
-class BackCallList(generics.ListAPIView):
+class BackCallViewSet(viewsets.ModelViewSet):
     queryset = BackCall.objects.all()
     serializer_class = BackCallSerializer
 
@@ -172,17 +151,33 @@ class OrderListView(generics.ListAPIView):
     serializer_class = OrderSerializer
 
 
+
+
 class OrderAPIView(ObjectMultipleModelAPIView):
-    querylist = [
+    querylist = list([
         {'queryset': User.objects.all(), 'serializer_class': UserSerializer},
         {'queryset': Order.objects.all(), 'serializer_class': OrderSerializer},
-    ]
+        {'queryset': Order.objects.filter(id=1), 'serializer_class': CartSerializer},
+    ])
 
 
 """Корзина"""
 
 
-class CaseViewSet(viewsets.ModelViewSet):
+class CaseListView(generics.ListAPIView):
     queryset = Case.objects.all()
     serializer_class = CaseSerializer
-    permission_classes = [AllowAny, ]
+
+
+
+
+class CartListView(generics.ListAPIView):
+    queryset = Order.objects.filter(id=1)
+    serializer_class = CartSerializer
+
+
+class CartinfoAPIView(ObjectMultipleModelAPIView):
+    querylist = [
+        {'queryset': Case.objects.all(), 'serializer_class': CaseSerializer},
+        {'queryset': Order.objects.filter(id=1), 'serializer_class': CartSerializer},
+    ]

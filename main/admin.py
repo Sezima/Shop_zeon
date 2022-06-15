@@ -2,11 +2,11 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
 
-
 from .models import *
 
 
 class PublicAdminForm(forms.ModelForm):
+    """Публичная оферта"""
     text = forms.CharField(widget=CKEditorUploadingWidget)
 
     class Meta:
@@ -14,13 +14,61 @@ class PublicAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
+@admin.register(Public)
 class PublicAdmin(admin.ModelAdmin):
     form = PublicAdminForm
 
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        else:
+            return True
+        return super(Public, self).has_add_permission(request)
 
+
+class MainAdminForm(forms.ModelForm):
+    """Главная страница"""
+
+    class Meta:
+        model = Main
+        fields = '__all__'
+
+
+@admin.register(Main)
+class MainAdmin(admin.ModelAdmin):
+    form = MainAdminForm
+
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        else:
+            return True
+        return super(Main, self).has_add_permission(request)
+
+
+class FooterAdminForm(forms.ModelForm):
+    """Футер"""
+
+    class Meta:
+        model = Footer
+        fields = '__all__'
+
+
+@admin.register(Footer)
+class FooterAdmin(admin.ModelAdmin):
+    form = FooterAdminForm
+
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        else:
+            return True
+
+        return super(Footer, self).has_add_permission(request)
 
 
 class NewAdminForm(forms.ModelForm):
+    """Новости"""
     text = forms.CharField(widget=CKEditorUploadingWidget)
 
     class Meta:
@@ -28,9 +76,11 @@ class NewAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
-
 class NewAdmin(admin.ModelAdmin):
     form = NewAdminForm
+
+
+"""О нас"""
 
 
 class AboutAdminForm(forms.ModelForm):
@@ -42,20 +92,27 @@ class AboutAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
-class AboutAdmin(admin.ModelAdmin):
-    form = AboutAdminForm
-
-    # это поможет мне что ограничить
-    def has_add_permission(self, request, obj=None):
-        return False
-
-
 class AboutImageInline(admin.TabularInline):
     model = AboutImage
     max_num = 3
     min_num = 3
 
 
+@admin.register(About)
+class AboutAdmin(admin.ModelAdmin):
+    inlines = [AboutImageInline]
+    form = AboutAdminForm
+
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        else:
+            return True
+
+        return super(About, self).has_add_permission(request)
+
+
+"""Товар"""
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -84,15 +141,28 @@ class HelpImageAdminForm(forms.ModelForm):
         fields = '__all__'
 
 
-
-
+@admin.register(HelpImage)
 class HelpImageAdmin(admin.ModelAdmin):
     form = HelpImageAdminForm
 
-    # def has_add_permission(self, request, obj=None):
-    #     return False
+    def has_add_permission(self, request):
+        if self.model.objects.count() >= 1:
+            return False
+        else:
+            return True
+
+        return super(HelpImage, self).has_add_permission(request)
 
 
+@admin.register(New)
+class NewAdmin(admin.ModelAdmin):
+    form = NewAdminForm
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    inlines = [ProductImageInline]
+    form = ProductAdminForm
 
 
 """Заказ"""
@@ -108,54 +178,25 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderInline]
 
 
+class CaseAdminForm:
+    """Корзина"""
+
+    class Meta:
+        model = Case
+        fields = '__all__'
 
 
+class CaseAdmin(admin.ModelAdmin):
+    form = CaseAdminForm
 
 
-@admin.register(Public)
-class PublicAdmin(admin.ModelAdmin):
-    form = PublicAdminForm
+admin.site.register(User)
 
-
-@admin.register(New)
-class NewAdmin(admin.ModelAdmin):
-    form = NewAdminForm
-
-
-@admin.register(HelpImage)
-class PublicAdmin(admin.ModelAdmin):
-    form = HelpImageAdminForm
-
-
-@admin.register(About)
-class AboutAdmin(admin.ModelAdmin):
-    inlines = [AboutImageInline]
-    form = AboutAdminForm
-
-
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductImageInline]
-    form = ProductAdminForm
-
-
-
-admin.site.unregister(Product)
-admin.site.register(Product, ProductAdmin)
-admin.site.register(Main)
 admin.site.register(Advantages)
 admin.site.register(Collection)
-admin.site.register(Help)
-admin.site.unregister(Public)
-admin.site.register(Public, PublicAdmin)
-admin.site.unregister(New)
-admin.site.register(New, NewAdmin)
-admin.site.unregister(About)
-admin.site.register(About, AboutAdmin)
 admin.site.register(FooterTwo)
-admin.site.register(Footer)
-admin.site.unregister(HelpImage)
-admin.site.register(HelpImage, HelpImageAdmin)
 admin.site.register(BackCall)
 admin.site.register(Case)
+admin.site.register(Help)
+admin.site.unregister(User)
 admin.site.register(User, OrderAdmin)

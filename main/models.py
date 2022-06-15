@@ -1,16 +1,12 @@
-from itertools import count
-
 from colorfield.fields import ColorField
 from django.core.validators import RegexValidator
 from django.db import models
-from fontawesome_5.fields import IconField
 
-from zeon import settings
-
-"""Главная страница(Слайдер)"""
+from main.validator import validate_file
 
 
 class Main(models.Model):
+    """Главная страница(Слайдер)"""
     image = models.ImageField(upload_to='image', verbose_name="Фотография")
     link = models.URLField(max_length=500, blank=True, verbose_name="Ссылка")
 
@@ -19,11 +15,9 @@ class Main(models.Model):
         verbose_name_plural = 'Главная страница'
 
 
-"""Преимущества"""
-
-
 class Advantages(models.Model):
-    icon = models.FileField(verbose_name="Иконка")
+    """Преимущества"""
+    icon = models.ImageField(verbose_name="Иконка", validators=[validate_file])
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Описание")
 
@@ -32,12 +26,10 @@ class Advantages(models.Model):
         verbose_name_plural = 'Наши преимущества'
 
 
-"""Коллекция"""
-
-
 class Collection(models.Model):
+    """Коллекция"""
     image = models.ImageField(upload_to='collection_image', verbose_name="Фотография")
-    name = models.CharField(max_length=220, unique=True, verbose_name="Название")
+    name = models.CharField(max_length=220, verbose_name="Название")
 
     def __str__(self):
         return self.name
@@ -47,10 +39,8 @@ class Collection(models.Model):
         verbose_name_plural = 'Коллекция'
 
 
-"""Публичная оферта"""
-
-
 class Public(models.Model):
+    """Публичная оферта"""
     title = models.CharField(max_length=200, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Описание")
 
@@ -59,10 +49,8 @@ class Public(models.Model):
         verbose_name_plural = 'Публичная оферта'
 
 
-"""Новости"""
-
-
 class New(models.Model):
+    """Новости"""
     image = models.ImageField(upload_to='images', verbose_name="Фотография")
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Описание")
@@ -72,10 +60,8 @@ class New(models.Model):
         verbose_name_plural = 'Новости'
 
 
-"""Помощь"""
-
-
 class Help(models.Model):
+    """Помощь"""
     question = models.TextField(verbose_name="Вопрос")
     answer = models.TextField(verbose_name="Ответ")
 
@@ -92,10 +78,8 @@ class HelpImage(models.Model):
         verbose_name_plural = 'Помощь фото'
 
 
-"""О нас"""
-
-
 class About(models.Model):
+    """О нас"""
     title = models.CharField(max_length=100, verbose_name="Заголовок")
     text = models.TextField(blank=True, verbose_name="Описание")
 
@@ -109,11 +93,24 @@ class AboutImage(models.Model):
     about = models.ForeignKey(About, on_delete=models.CASCADE, related_name='images')
 
 
-"""Футер"""
+class BackCall(models.Model):
+    """Обратный звонок"""
+    name = models.CharField(max_length=200, blank=True, null=True, verbose_name="Имя")
+    phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
+    number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True,
+                              null=True, blank=True, verbose_name="Номер телефона")
+    data = models.DateTimeField(verbose_name="Дата обращения")
+    types = models.CharField(max_length=200, verbose_name="Тип обращения", default='Обратный звонок')
+    status = models.BooleanField(blank=True, null=True, default=False, verbose_name="Статус")
+
+    class Meta:
+        verbose_name = 'Обратный звонок'
+        verbose_name_plural = 'Обратный звонок'
 
 
 class Footer(models.Model):
-    logo = IconField(verbose_name="Логотип")
+    """Футер"""
+    logo = models.ImageField(upload_to='image', verbose_name="Фотография", validators=[validate_file])  # do FileField
     text = models.TextField(verbose_name="Текстовая информация")
     phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
     number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True, verbose_name="Номер хедера")
@@ -123,10 +120,8 @@ class Footer(models.Model):
         verbose_name_plural = 'Футер'
 
 
-"""Футер соц.сети"""
-
-
 class FooterTwo(models.Model):
+    """Футер соц.сети"""
     phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
     number = models.CharField(validators=[phoneNumberRegex], max_length=16, null=True, blank=True)
     telegram = models.URLField(max_length=500, blank=True, null=True)
@@ -146,27 +141,15 @@ class FooterTwo(models.Model):
         verbose_name_plural = 'Футер соц.сети'
 
 
-"""Товар"""
-
-
-# CHOOSE_SIZE = [
-#     ('40', '40'),
-#     ('42', '42'),
-#     ('44', '44'),
-#     ('46', '46'),
-#     ('48', '48')
-#
-# ]
-
-
 class Product(models.Model):
+    """Товар"""
     collections = models.ForeignKey(Collection, on_delete=models.CASCADE, related_name='product')
 
     title = models.CharField(max_length=150, verbose_name="Название товара")
     vendorcode = models.TextField(verbose_name="Артикул товара")
     price = models.IntegerField(verbose_name="Цена", default=0)
     size = models.CharField(max_length=20, default='42-50', verbose_name="Размер")
-    amount = models.IntegerField(default=5, verbose_name="Количество в линейке")
+    amount = models.IntegerField(default=5, verbose_name="Количество в линейке", blank=True)
     sale = models.IntegerField(default=0, blank=True, verbose_name='Скидка')
     new_price = models.IntegerField(blank=True, default=0, verbose_name="Новая цена")
     description = models.TextField(verbose_name="Описание")
@@ -174,8 +157,7 @@ class Product(models.Model):
     structure = models.CharField(max_length=200, verbose_name="Состав ткани")
     new = models.BooleanField(verbose_name="Новинки")
     hit = models.BooleanField(verbose_name="Хит продаж")
-    favorites = models.BooleanField(verbose_name="Избранные")
-    
+
     def save(self):
         if self.new_price != 0:
             self.sale = self.price - self.new_price
@@ -183,15 +165,10 @@ class Product(models.Model):
         else:
             super(Product, self).save()
 
-    # def save(self):
-    #     if self.sale != 0:
-    #         new = (self.price * self.sale) / 100
-    #         self.new_price = self.price - new
-    #         super(Product, self).save()
-    #     else:
-    #         super(Product, self).save()
-
-    
+    def save(self):
+        n = ((int(self.size[3:]) - int(self.size[:2])) // 2) + 1
+        self.amount = n
+        super(Product, self).save()
 
     def __str__(self):
         return f'{self.title}'
@@ -207,33 +184,26 @@ class ProductImage(models.Model):
     color = ColorField()
 
 
-"""Обратный звонок"""
 
 
-class BackCall(models.Model):
-    name = models.CharField(max_length=200, blank=True, null=True, verbose_name="Имя")
-    phoneNumberRegex = RegexValidator(regex=r"^\+?1?\d{8,15}$")
-    number = models.CharField(validators=[phoneNumberRegex], max_length=16, unique=True,
-                              null=True, blank=True, verbose_name="Номер телефона")
-    data = models.DateTimeField(verbose_name="Дата обращения")
-    types = models.CharField(max_length=200, verbose_name="Тип обращения", default='Обратный звонок')
-    status = models.BooleanField(blank=True, null=True, default=False, verbose_name="Статус")
 
-    class Meta:
-        verbose_name = 'Обратный звонок'
-        verbose_name_plural = 'Обратный звонок'
+class Favorites(models.Model):
+    favorites = models.BooleanField(default=False)
+    fav = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorites')
+
+    def __str__(self):
+        return str(self.favorites)
 
 
-"""заказ инфо о юзере"""
+"""Заказ , корзина и инфо"""
 
 STATUS = (
     ('new', 'новый'),
     ('order', 'оформлен'),
     ('cancel', 'отмена')
 )
-
-
 class User(models.Model):
+    """Инфо о юзере"""
     name = models.CharField(max_length=250, verbose_name='Имя')
     last_name = models.CharField(max_length=250, verbose_name='Фамилия')
     email = models.EmailField(verbose_name='Электронная почта')
@@ -245,8 +215,35 @@ class User(models.Model):
     status = models.CharField(max_length=100, choices=STATUS, default='new', verbose_name='Статус заказа')
 
     class Meta:
-        verbose_name = 'Заказ'
-        verbose_name_plural = 'Заказ'
+        verbose_name = 'Заказщик'
+        verbose_name_plural = 'Заказшик'
+
+    def __str__(self):
+        return self.name
+
+
+"""Корзина"""
+
+
+
+class Case(models.Model):
+    cart = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cases')
+    quantity = models.PositiveIntegerField(default=1, verbose_name='Колличество товара')
+
+    class Meta:
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзина'
+
+    def __str__(self):
+        return f'{self.cart}'
+
+    # удаление продукта
+    # def del_product(self):
+    #     if (self.cart == Order.product) and User.status == 'order':
+    #         self.cart.delete()
+    #     else:
+    #         self.cart.save()
+
 
 
 """Заказ"""
@@ -254,11 +251,19 @@ class User(models.Model):
 
 class Order(models.Model):
     order = models.ForeignKey(User, related_name='users', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, related_name='product', on_delete=models.CASCADE)
+    product = models.ForeignKey(Case, related_name='product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
 
     def __str__(self):
         return '{}'.format(self.id)
+
+
+
 
 
     def get_count(self):
@@ -268,53 +273,14 @@ class Order(models.Model):
         endCost = 0
         for i in Order.objects.all():
             c += i.quantity
-            p = c * 5
-            cost += i.quantity * i.product.price
+            p = c * i.product.cart.amount
+            cost += i.quantity * i.product.cart.price
             endCost = cost - sale
 
-            if i.product.new_price != 0:
-                sale += (i.product.price - i.product.new_price) * i.quantity
+            if i.product.cart.new_price != 0:
+                sale += (i.product.cart.price - i.product.cart.new_price) * i.quantity
             else:
                 continue
-
-
-        return f'Колличество линейки {c}, ' \
-               f'колличество товаров {p}, ' \
-               f'Стоимость {cost}, ' \
-               f'Скидка {sale}, ' \
-               f'Итог {endCost}, '
-
-
-"""Корзина"""
-
-
-class Case(models.Model):
-    cases = models.BooleanField(default=False)
-    cart = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cases')
-    quantity = models.PositiveIntegerField(default=1)
-
-
-    def __str__(self):
-        return str(self.cases)
-
-
-
-    def get_count(self):
-        c = 0
-        cost = 0
-        sale = 0
-        endCost = 0
-        for i in Case.objects.all():
-            c += i.quantity
-            p = c * 5
-            cost += i.quantity * i.cart.price
-            endCost = cost - sale
-
-            if i.cart.new_price != 0:
-                sale += (i.cart.price - i.cart.new_price) * i.quantity
-            else:
-                continue
-
 
         return f'Колличество линейки {c}, ' \
                f'колличество товаров {p}, ' \
