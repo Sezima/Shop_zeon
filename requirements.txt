@@ -9,3 +9,4 @@ django-fontawesome-5
 django-phonenumber-field
 phonenumbers
 eav-django
+pyrebase

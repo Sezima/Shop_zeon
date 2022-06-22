@@ -18,45 +18,52 @@ from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.routers import DefaultRouter
 
 from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
-    CollProductListView, MainSiteAPIView, NewProductListView, HitProductListView, FavProductListView, \
-    CollectionNewListView, DetailListView, BackCallList, UserListView
+    MainSiteAPIView, NewProductListView, HitProductListView, \
+    DetailListView, Search, BackCallViewSet, UserListView, OrderListView, \
+    OrderAPIView, CaseViewSet, FavoriteViewSet
 
-
+router = DefaultRouter()
+router.register('звонок', BackCallViewSet)
+router.register('избранные', FavoriteViewSet)
+router.register('корзина', CaseViewSet)
 schema_view = get_schema_view(
-   openapi.Info(
-      title="Snippets API",
-      default_version='v1',
-      description="Test description",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="contact@snippets.local"),
-      license=openapi.License(name="BSD License"),
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
+    openapi.Info(
+        title="Snippets API",
+        default_version='v1',
+        description="Test description",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@snippets.local"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='django-admin'),
     path('', schema_view.with_ui()),
     path('ckeditor/', include('ckeditor_uploader.urls')),
-    path('api/v1/collection/', CollectionListView.as_view()),
-    path('api/v1/public/', PublicListView.as_view()),
-    path('api/v1/news/', NewListView.as_view()),
-    path('api/v1/product/', ProductListView.as_view()),
-    path('api/v1/collectionnew/', CollectionNewListView.as_view()),
-    path('api/v1/help/', HelpAPIView.as_view()),
-    path('api/v1/footer/', FooterAPIView.as_view()),
-    path('api/v1/about/', AboutAPIView.as_view()),
-    path('api/v1/collproduct/', CollProductListView.as_view()),
-    path('api/v1/newproduct/', NewProductListView.as_view()),
-    path('api/v1/hitproduct/', HitProductListView.as_view()),
-    path('api/v1/favorite/', FavProductListView.as_view()),
-    path('api/v1/user/', UserListView.as_view()),
-    path('api/v1/backcall/', BackCallList.as_view()),
-    path('api/v1/mainsite/', MainSiteAPIView.as_view()),
-    path('api/v1/detail/<int:pk>/', DetailListView.as_view()),
+    path('api/v1/коллекция/', CollectionListView.as_view()),
+    path('api/v1/оферта/', PublicListView.as_view()),
+    path('api/v1/новости/', NewListView.as_view()),
+    path('api/v1/товар/', ProductListView.as_view()),
+    path('api/v1/помощь/', HelpAPIView.as_view()),
+    path('api/v1/футер/', FooterAPIView.as_view(), name='footer'),
+    path('api/v1/онас/', AboutAPIView.as_view()),
+    path('api/v1/новинки/', NewProductListView.as_view()),
+    path('api/v1/хит/', HitProductListView.as_view()),
+    path('api/v1/главная/', MainSiteAPIView.as_view()),
+    path('api/v1/коллекцият/<int:pk>/', DetailListView.as_view()),
+    # path('api/v1/заказщик/<int:pk>/', CartListView.as_view()),
+    path('api/v1/', include(router.urls)),
+    path('api/v1/поиск/', Search.as_view()),
+    # path('api/v1/cartinfo/', CartinfoAPIView.as_view()),
+    path('api/v1/заказ/', OrderAPIView.as_view()),
+    path('api/v1/account/', include('account.urls')),
+    # path('api/v1/c/', CollectionsAPIView.as_view()),
 
 ]
