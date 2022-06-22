@@ -1,6 +1,7 @@
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django import forms
 from django.contrib import admin
+from django.shortcuts import redirect
 
 from .models import *
 
@@ -16,7 +17,14 @@ class PublicAdminForm(forms.ModelForm):
 
 @admin.register(Public)
 class PublicAdmin(admin.ModelAdmin):
+    """Публичная оферта"""
     form = PublicAdminForm
+
+    def changelist_view(self, request, extra_context=None):
+        if self.model.objects.count() < 1:
+            return redirect(request.path + 'add/')
+        else:
+            return redirect(request.path + '1/')
 
     def has_add_permission(self, request):
         if self.model.objects.count() >= 1:
@@ -38,6 +46,12 @@ class MainAdminForm(forms.ModelForm):
 class MainAdmin(admin.ModelAdmin):
     form = MainAdminForm
 
+    def changelist_view(self, request, extra_context=None):
+        if self.model.objects.count() < 1:
+            print(request)
+            return redirect(request.path + 'add/')
+        return redirect(request.path + '1')
+
     def has_add_permission(self, request):
         if self.model.objects.count() >= 1:
             return False
@@ -57,6 +71,12 @@ class FooterAdminForm(forms.ModelForm):
 @admin.register(Footer)
 class FooterAdmin(admin.ModelAdmin):
     form = FooterAdminForm
+
+    def changelist_view(self, request, extra_context=None):
+        if self.model.objects.count() < 1:
+            print(request)
+            return redirect(request.path + 'add/')
+        return redirect(request.path + '1')
 
     def has_add_permission(self, request):
         if self.model.objects.count() >= 1:
@@ -78,6 +98,14 @@ class NewAdminForm(forms.ModelForm):
 
 class NewAdmin(admin.ModelAdmin):
     form = NewAdminForm
+
+
+"""Обратный звонок"""
+
+
+class BackcallAdmin(admin.ModelAdmin):
+    model = BackCall
+    list_display = ['name', 'number', 'data', 'types', 'status']
 
 
 """О нас"""
@@ -102,6 +130,12 @@ class AboutImageInline(admin.TabularInline):
 class AboutAdmin(admin.ModelAdmin):
     inlines = [AboutImageInline]
     form = AboutAdminForm
+
+    def changelist_view(self, request, extra_context=None):
+        if self.model.objects.count() < 1:
+            print(request)
+            return redirect(request.path + 'add/')
+        return redirect(request.path + '1')
 
     def has_add_permission(self, request):
         if self.model.objects.count() >= 1:
@@ -134,7 +168,6 @@ class ProductImageInline(admin.TabularInline):
 
 
 class HelpImageAdminForm(forms.ModelForm):
-    image = models.ImageField(upload_to='images')
 
     class Meta:
         model = HelpImage
@@ -145,8 +178,13 @@ class HelpImageAdminForm(forms.ModelForm):
 class HelpImageAdmin(admin.ModelAdmin):
     form = HelpImageAdminForm
 
+    def changelist_view(self, request, extra_context=None):
+        if self.model.objects.count() < 1:
+            return redirect(request.path + 'add/')
+        return redirect(request.path + '1')
+
     def has_add_permission(self, request):
-        if self.model.objects.count() >= 1:
+        if HelpImage.objects.count() >= 1:
             return False
         else:
             return True
@@ -165,38 +203,28 @@ class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
 
 
-"""Заказ"""
-
-
-class OrderInline(admin.TabularInline):
-    model = Order
-    raw_id_fields = ['product']
-
-
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'last_name', 'email', 'city']
-    inlines = [OrderInline]
-
-
-class CaseAdminForm:
-    """Корзина"""
-
-    class Meta:
-        model = Case
-        fields = '__all__'
+"""Корзина"""
 
 
 class CaseAdmin(admin.ModelAdmin):
-    form = CaseAdminForm
+    model = Case
+    list_display = ['id', 'cart']
 
 
-admin.site.register(User)
+class OrderInline(admin.TabularInline):
+    model = Case
+    raw_id_fields = ['cart', ]
+
+
+class OrderAdmin(admin.ModelAdmin):
+    inlines = [OrderInline]
+
 
 admin.site.register(Advantages)
 admin.site.register(Collection)
 admin.site.register(FooterTwo)
-admin.site.register(BackCall)
-admin.site.register(Case)
+admin.site.register(BackCall, BackcallAdmin)
+admin.site.register(Case, CaseAdmin)
 admin.site.register(Help)
-admin.site.unregister(User)
-admin.site.register(User, OrderAdmin)
+admin.site.register(User)
+admin.site.register(Order)

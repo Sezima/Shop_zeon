@@ -94,7 +94,7 @@ class FooterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Footer
-        fields = ('logo', 'text', 'number')
+        fields = '__all__'
 
 
 class FooterTwoSerializer(serializers.ModelSerializer):
@@ -108,7 +108,7 @@ class NewProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorites', 'new', 'hit', 'size')
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -121,7 +121,7 @@ class HitProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'title', 'price', 'new_price', 'sale', 'favorites', 'new', 'hit', 'size')
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -145,32 +145,38 @@ class AdvantagesSerializer(serializers.ModelSerializer):
         fields = ('icon', 'title', 'text')
 
 
-class FavoritesSerializer(serializers.ModelSerializer):
+class FavoriteSerializer(serializers.ModelSerializer):
     """Избранные"""
+    author = serializers.ReadOnlyField(source='author.email')
 
     class Meta:
-        model = Favorites
+        model = Favorite
         fields = '__all__'
 
     def create(self, validated_data):
-        fav = validated_data.get('fav')
-        favorite = Favorites.objects.get_or_create(fav=fav)[0]
+        request = self.context.get('request')
+        author = request.user
+        products = validated_data.get('products')
+        favorite = Favorite.objects.get_or_create(author=author, products=products)[0]
         favorite.favorites = True if favorite.favorites is False else False
         favorite.save()
-        if favorite.favorites == True:
+        if favorite.favorites:
             favorite.save()
         else:
             favorite.delete()
-
         return favorite
+
+
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['images'] = ProductImageSerializer(instance.fav.images.all(), many=True).data
-        representation['name'] = instance.fav.title
-        representation['price'] = instance.fav.price
-        representation['size'] = instance.fav.size
-        representation['new_price'] = instance.fav.new_price
+        representation['images'] = ProductImageSerializer(instance.products.images.all(), many=True).data
+        representation['author'] = instance.author.email
+        representation['product'] = instance.products.title
+        representation['price'] = instance.products.price
+        representation['size'] = instance.products.size
+        representation['new_price'] = instance.products.new_price
+
         return representation
 
 
@@ -204,11 +210,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    order = serializers.ReadOnlyField(source='order.name')
+
     class Meta:
         model = Order
-        fields = ('quantity', 'order')
+        fields = ('order', 'quantity', 'count', 'count_products', 'cost', 'sale', 'end_cost')
 
     def to_representation(self, instance):
+        print(instance)
         representation = super().to_representation(instance)
         representation['images'] = ProductImageSerializer(instance.product.cart.images.all(), many=True).data
         representation['name'] = instance.product.cart.title
@@ -218,13 +227,14 @@ class OrderSerializer(serializers.ModelSerializer):
         return representation
 
 
-
 class CaseSerializer(serializers.ModelSerializer):
     """корзина"""
+    author = serializers.ReadOnlyField(source='author.email')
+
 
     class Meta:
         model = Case
-        fields = ('id', 'quantity', )
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -234,18 +244,9 @@ class CaseSerializer(serializers.ModelSerializer):
         representation['size'] = instance.cart.size
         representation['new_price'] = instance.cart.new_price
 
+
+
         return representation
-
-
-
-
-class CartSerializer(serializers.ModelSerializer): #инфо о заказе
-    class Meta:
-        model = Order
-        fields = ('get_count', )
-
-
-
 
 
 

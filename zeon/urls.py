@@ -24,11 +24,12 @@ from main.views import CollectionListView, PublicListView, NewListView, \
     HelpAPIView, AboutAPIView, ProductListView, FooterAPIView, \
     MainSiteAPIView, NewProductListView, HitProductListView, \
     DetailListView, Search, BackCallViewSet, UserListView, OrderListView, \
-    FavoritesViewSet, CaseListView, CartListView, CartinfoAPIView, OrderAPIView
+    OrderAPIView, CaseViewSet, FavoriteViewSet
 
 router = DefaultRouter()
 router.register('звонок', BackCallViewSet)
-router.register('избранные', FavoritesViewSet)
+router.register('избранные', FavoriteViewSet)
+router.register('корзина', CaseViewSet)
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
@@ -43,7 +44,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='django-admin'),
     path('', schema_view.with_ui()),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/v1/коллекция/', CollectionListView.as_view()),
@@ -51,17 +52,18 @@ urlpatterns = [
     path('api/v1/новости/', NewListView.as_view()),
     path('api/v1/товар/', ProductListView.as_view()),
     path('api/v1/помощь/', HelpAPIView.as_view()),
-    path('api/v1/футер/', FooterAPIView.as_view()),
+    path('api/v1/футер/', FooterAPIView.as_view(), name='footer'),
     path('api/v1/онас/', AboutAPIView.as_view()),
     path('api/v1/новинки/', NewProductListView.as_view()),
     path('api/v1/хит/', HitProductListView.as_view()),
     path('api/v1/главная/', MainSiteAPIView.as_view()),
     path('api/v1/коллекцият/<int:pk>/', DetailListView.as_view()),
-    path('api/v1/заказщик/<int:pk>/', UserListView.as_view()),
-    path('api/v1/корзина/', CaseListView.as_view()),
+    # path('api/v1/заказщик/<int:pk>/', CartListView.as_view()),
     path('api/v1/', include(router.urls)),
     path('api/v1/поиск/', Search.as_view()),
-    path('api/v1/cartinfo/', CartinfoAPIView.as_view()),
+    # path('api/v1/cartinfo/', CartinfoAPIView.as_view()),
     path('api/v1/заказ/', OrderAPIView.as_view()),
+    path('api/v1/account/', include('account.urls')),
+    # path('api/v1/c/', CollectionsAPIView.as_view()),
 
 ]
